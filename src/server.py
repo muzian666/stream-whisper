@@ -10,12 +10,22 @@ from .config import REDIS_SERVER
 from .utils import asyncformer
 
 CONVERSATION = deque(maxlen=100)
-MODEL_SIZE = "large-v3"
 CN_PROMPT = '聊一下基于faster-whisper的实时/低延迟语音转写服务'
 logging.basicConfig(level=logging.INFO)
-model = WhisperModel(MODEL_SIZE, device="auto", compute_type="default")
-logging.info('Model loaded')
 
+# 用户选择模型加载方式
+model_choice = input("选择模型加载方式：\n1. 使用本地模型文件\n2. 通过网络(huggingface)下载模型\n请输入选项（1或2）：")
+
+MODEL_SIZE = "large-v3"
+if model_choice.strip() == '1':
+    # 使用本地模型文件
+    model_path = "model"  # 假设本地模型文件存放在当前目录下的model文件夹中
+    model = WhisperModel(MODEL_SIZE, model_path=model_path, device="auto", compute_type="default")
+else:
+    # 通过网络下载模型
+    model = WhisperModel(MODEL_SIZE, device="auto", compute_type="default")
+
+logging.info('Model loaded')
 
 async def transcribe():
     # download audio from redis by popping from list: STS:AUDIO

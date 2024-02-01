@@ -9,20 +9,30 @@
 
 
 # 使用方法
-## 服务端
+## 服务端 
+- (目前仅在Linux上得到了验证)
+### 需要额外安装的内容
+#### Linux
+```bash
+apt -y install libcublas11
+```
+- `libcublas11` 是 NVIDIA CUDA Toolkit 的依赖，如果需要使用 CUDA Toolkit，需要安装。
+
+### 启动服务端
 ```bash
 git clone https://github.com/ultrasev/stream-whisper
-apt -y install libcublas11
 cd stream-whisper
 pip3 install -r requirements.txt
+python3 -m src.server
 ```
 
 注：
-- `libcublas11` 是 NVIDIA CUDA Toolkit 的依赖，如果需要使用 CUDA Toolkit，需要安装。
+
 - 经 [@muzian666](https://github.com/muzian666) 提示，aioredis 包目前仍然不支持 Python3.11，Python 版本建议 3.8 ~ 3.10
 
-把 `.env` 文件中的 `REDIS_SERVER` 改成自己的 Redis 地址，然后运行 `python3 -m src.server`，服务端就启动了。
-第一次执行时，会从 huggingface 上下载语音识别模型，需要等待一段时间。Huggingface 已经被防火墙特别对待了，下载速度很慢，建议使用代理。
+首次运行时会提示自动创建 `.env` 文件并要求输入 `REDIS_SERVER`，将以 `redis://` 开头的链接输入其中即可
+
+第一次执行时，可以选择从本地读取或从网络下载，如果选择本地读取则会从 `./src/model` 中加载模型，如果选择网络下载则会从huggingface下载对应模型。鉴于目前 Huggingface 已经被防火墙特别对待了，下载速度很慢，建议使用代理。
 
 
 ## 客户端
